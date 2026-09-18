@@ -70,6 +70,92 @@ npm run build
 
 The optimized and minified files will be placed in the `dist` directory.
 
+## Despliegue con Docker
+
+Estas instrucciones están dirigidas al equipo de TI responsable de desplegar Norn en un entorno con Docker. La aplicación se compila durante la creación de la imagen y se sirve como contenido estático mediante Nginx.
+
+### Requisitos
+
+- Docker Engine 24 o posterior.
+- Docker Compose v2, incluido en Docker Desktop y en las instalaciones actuales de Docker Engine.
+- Acceso al código fuente del repositorio.
+- El puerto del host elegido debe estar disponible y permitido por el firewall o balanceador correspondiente.
+
+### Despliegue recomendado con Docker Compose
+
+1. Situarse en el directorio raíz del proyecto, donde están `Dockerfile` y `docker-compose.yml`:
+
+   ```sh
+   cd vsm-workshop
+   ```
+
+2. Revisar el puerto de publicación. Por defecto, la aplicación estará disponible en el puerto `8080` del host. Para usar otro puerto, crear un archivo `.env` a partir del ejemplo:
+
+   ```sh
+   cp .env.example .env
+   ```
+
+   Editar `.env` y establecer el puerto deseado:
+
+   ```dotenv
+   HOST_PORT=9090
+   ```
+
+   `HOST_PORT` es el puerto externo del host. El contenedor mantiene el puerto interno `8080` y no es necesario modificarlo.
+
+3. Construir la imagen y arrancar el servicio:
+
+   ```sh
+   docker compose up --build -d
+   ```
+
+4. Verificar el estado del servicio y consultar los logs si fuese necesario:
+
+   ```sh
+   docker compose ps
+   docker compose logs --follow web
+   ```
+
+5. Acceder a la aplicación desde un navegador:
+
+   ```text
+   http://localhost:8080
+   ```
+
+   Si se configuró otro valor en `HOST_PORT`, sustituir `8080` por dicho valor.
+
+### Despliegue con Docker CLI
+
+Como alternativa, construir y ejecutar la imagen directamente:
+
+```sh
+docker build -t norn:latest .
+docker run -d --name norn-web --restart unless-stopped -p 8080:8080 norn:latest
+```
+
+Para publicar la aplicación en otro puerto del host, cambiar únicamente el primer puerto:
+
+```sh
+docker run -d --name norn-web --restart unless-stopped -p 9090:8080 norn:latest
+```
+
+### Parada y actualización
+
+Para detener el despliegue de Compose:
+
+```sh
+docker compose down
+```
+
+Para incorporar una nueva versión del código, descargar los cambios y reconstruir la imagen:
+
+```sh
+git pull
+docker compose up --build -d
+```
+
+El despliegue no requiere base de datos ni volúmenes persistentes. La configuración de Nginx incluye el fallback de rutas necesario para la navegación de la aplicación Svelte.
+
 ## Testing
 
 This project includes several types of tests to ensure quality and correctness.

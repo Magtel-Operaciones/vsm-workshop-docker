@@ -9,7 +9,13 @@
    * - Escape key dismisses via oncancel
    * - Focus is trapped between Cancel and confirm buttons
    */
-  let { message = 'Are you sure?', confirmLabel = 'Delete', onconfirm, oncancel } = $props()
+  let {
+    message = 'Are you sure?',
+    confirmLabel = 'Delete',
+    placement = 'above',
+    onconfirm,
+    oncancel,
+  } = $props()
 
   let cancelButtonRef = $state(null)
 
@@ -25,7 +31,10 @@
       oncancel()
     } else if (e.key === 'Tab') {
       // Trap focus between the two buttons
-      const focusable = [cancelButtonRef, cancelButtonRef?.nextElementSibling].filter(Boolean)
+      const focusable = [
+        cancelButtonRef,
+        cancelButtonRef?.nextElementSibling,
+      ].filter(Boolean)
       const first = focusable[0]
       const last = focusable[focusable.length - 1]
       if (e.shiftKey && document.activeElement === first) {
@@ -40,14 +49,16 @@
 </script>
 
 <div
-  class="absolute bottom-full left-0 mb-2 z-[60] w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-3"
+  class={`absolute left-0 z-[60] w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-3 ${placement === 'below' ? 'top-full mt-2' : 'bottom-full mb-2'}`}
   data-testid="confirm-popover"
   role="alertdialog"
   aria-labelledby="confirm-popover-message"
   onkeydown={handleKeydown}
 >
-  <p id="confirm-popover-message" class="text-sm text-gray-700 mb-3">{message}</p>
-  <div class="flex gap-2 justify-end">
+  <p id="confirm-popover-message" class="mb-3 text-sm text-gray-700">
+    {message}
+  </p>
+  <div class="flex justify-end gap-2">
     <button
       bind:this={cancelButtonRef}
       onclick={oncancel}
