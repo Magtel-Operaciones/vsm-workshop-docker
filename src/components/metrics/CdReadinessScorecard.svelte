@@ -25,10 +25,13 @@
   }
 
   // Contextual control visibility, so an untouched row carries at most the relevant action.
-  const canConfirm = (item) => item.source === 'inferred' && item.status === 'gap'
+  const canConfirm = (item) =>
+    item.source === 'inferred' && item.status === 'gap'
   const canOverride = (item) =>
-    item.source === 'inferred' && (item.status === 'gap' || item.status === 'needs-review')
-  const canReset = (item) => item.source === 'confirmed' || item.source === 'overridden'
+    item.source === 'inferred' &&
+    (item.status === 'gap' || item.status === 'needs-review')
+  const canReset = (item) =>
+    item.source === 'confirmed' || item.source === 'overridden'
 
   const btn =
     'rounded border px-2 py-0.5 text-xs font-medium hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -36,7 +39,9 @@
 
 {#snippet itemRow(item)}
   <li
-    class="flex items-start gap-3 rounded-md border p-3 {statusColors[item.status]}"
+    class="flex items-start gap-3 rounded-md border p-3 {statusColors[
+      item.status
+    ]}"
     data-testid="cd-readiness-item-{item.id}"
     data-status={item.status}
   >
@@ -111,12 +116,14 @@
 <details
   class="bg-white border-t border-gray-200 px-6 py-4"
   data-testid="cd-readiness-scorecard"
-  open
 >
   <summary class="cursor-pointer text-sm font-semibold text-gray-800">
     CD Readiness Scorecard
     {#if steps.length > 0}
-      <span class="ml-2 text-xs font-normal text-gray-500" data-testid="cd-readiness-summary">
+      <span
+        class="ml-2 text-xs font-normal text-gray-500"
+        data-testid="cd-readiness-summary"
+      >
         {summary.met} met · {summary.gap} gaps · {summary.needsReview} needs review
       </span>
     {/if}
@@ -129,7 +136,9 @@
   {:else}
     <div class="mt-3 grid grid-cols-1 gap-6 lg:grid-cols-2">
       <section>
-        <h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+        <h3
+          class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500"
+        >
           MinimumCD Core Practices
         </h3>
         <ul class="space-y-2">
@@ -139,7 +148,9 @@
         </ul>
       </section>
       <section>
-        <h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+        <h3
+          class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500"
+        >
           Flow Readiness Signals
         </h3>
         <ul class="space-y-2">

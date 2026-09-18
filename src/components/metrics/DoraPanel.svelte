@@ -33,15 +33,32 @@
   }
 
   const fields = [
-    { key: 'deploymentFrequencyPerDay', label: 'Deploy freq (per day)', tier: 'deploymentFrequency' },
-    { key: 'leadTimeForChangesMinutes', label: 'Lead time for changes (min)', tier: 'leadTimeForChanges' },
-    { key: 'changeFailureRatePct', label: 'Change failure rate (%)', tier: 'changeFailureRate' },
+    {
+      key: 'deploymentFrequencyPerDay',
+      label: 'Deploy freq (per day)',
+      tier: 'deploymentFrequency',
+    },
+    {
+      key: 'leadTimeForChangesMinutes',
+      label: 'Lead time for changes (min)',
+      tier: 'leadTimeForChanges',
+    },
+    {
+      key: 'changeFailureRatePct',
+      label: 'Change failure rate (%)',
+      tier: 'changeFailureRate',
+    },
     { key: 'mttrMinutes', label: 'MTTR (min)', tier: 'mttr' },
   ]
 </script>
 
-<details class="bg-white border-t border-gray-200 px-6 py-4" data-testid="dora-panel" open>
-  <summary class="cursor-pointer text-sm font-semibold text-gray-800">DORA Reconciliation</summary>
+<details
+  class="bg-white border-t border-gray-200 px-6 py-4"
+  data-testid="dora-panel"
+>
+  <summary class="cursor-pointer text-sm font-semibold text-gray-800"
+    >DORA Reconciliation</summary
+  >
 
   <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
     {#each fields as f (f.key)}
@@ -56,7 +73,9 @@
           data-testid="dora-input-{f.key}"
         />
         <span
-          class="mt-1 inline-block rounded px-1 text-[10px] font-semibold uppercase {tierColors[tiers[f.tier]]}"
+          class="mt-1 inline-block rounded px-1 text-[10px] font-semibold uppercase {tierColors[
+            tiers[f.tier]
+          ]}"
           data-testid="dora-tier-{f.tier}"
         >
           {tiers[f.tier]}
@@ -65,17 +84,28 @@
     {/each}
   </div>
 
-  <div class="mt-3 rounded-md bg-gray-50 p-3 text-xs" data-testid="dora-reconciliation" data-status={reconciliation.status}>
+  <div
+    class="mt-3 rounded-md bg-gray-50 p-3 text-xs"
+    data-testid="dora-reconciliation"
+    data-status={reconciliation.status}
+  >
     {#if reconciliation.status === 'unknown'}
-      <p class="text-gray-600">Enter the actual lead time for changes to reconcile it against the map.</p>
+      <p class="text-gray-600">
+        Enter the actual lead time for changes to reconcile it against the map.
+      </p>
     {:else}
       <p>
-        VSM-derived lead time: <strong>{formatDuration(reconciliation.vsmLeadTime)}</strong>
-        · Actual: <strong>{formatDuration(reconciliation.actualLeadTime)}</strong>
+        VSM-derived lead time: <strong
+          >{formatDuration(reconciliation.vsmLeadTime)}</strong
+        >
+        · Actual:
+        <strong>{formatDuration(reconciliation.actualLeadTime)}</strong>
       </p>
       <p class="mt-1 {reconColors[reconciliation.status]}">
         {#if reconciliation.status === 'hidden-queue'}
-          Hidden queue of <strong>{formatDuration(reconciliation.hiddenQueue)}</strong> the map does not yet show.
+          Hidden queue of <strong
+            >{formatDuration(reconciliation.hiddenQueue)}</strong
+          > the map does not yet show.
         {:else if reconciliation.status === 'optimistic-map'}
           The map shows more lead time than reality — check the step estimates.
         {:else}
