@@ -91,6 +91,12 @@ describe('simulationStore (Svelte)', () => {
       expect(simDataStore.workItemCount).toBe(20)
     })
 
+    it('accepts work item counts outside the previous preset list', () => {
+      simDataStore.setWorkItemCount(37)
+
+      expect(simDataStore.workItemCount).toBe(37)
+    })
+
     it('does not allow negative values', () => {
       simDataStore.setWorkItemCount(-5)
 

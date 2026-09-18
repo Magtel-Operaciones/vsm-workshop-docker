@@ -13,8 +13,6 @@
     { value: 4, label: '4x' },
   ]
 
-  const AVAILABLE_WORK_ITEM_COUNTS = [5, 10, 20, 50, 100]
-
   const service = getSimulationService()
 
   // Reactive derived values
@@ -35,7 +33,10 @@
   }
 
   function handleWorkItemsChange(e) {
-    simDataStore.setWorkItemCount(parseInt(e.target.value, 10))
+    const count = e.currentTarget.valueAsNumber
+    if (Number.isInteger(count) && count >= 0) {
+      simDataStore.setWorkItemCount(count)
+    }
   }
 
   function handleStart() {
@@ -140,19 +141,17 @@
       <label for="workItems" class="text-sm text-slate-600">
         Work Items:
       </label>
-      <select
+      <input
         id="workItems"
+        type="number"
+        min="0"
+        step="1"
         value={workItemCount}
         onchange={handleWorkItemsChange}
         disabled={isRunning || isPaused}
         class="px-2 py-1 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-      >
-        {#each AVAILABLE_WORK_ITEM_COUNTS as count (count)}
-          <option value={count}>
-            {count}
-          </option>
-        {/each}
-      </select>
+        data-testid="work-items-input"
+      />
     </div>
 
     <!-- Progress -->
