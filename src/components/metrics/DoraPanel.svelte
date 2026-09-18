@@ -5,11 +5,13 @@
     classifyDora,
   } from '../../utils/calculations/doraReconciliation.js'
   import { formatDuration } from '../../utils/calculations/metrics.js'
+  import { workdayPreferencesStore } from '../../stores/workdayPreferencesStore.svelte.js'
 
   let steps = $derived(vsmDataStore.steps)
   let dora = $derived(vsmDataStore.dora)
   let reconciliation = $derived(reconcileLeadTime(steps, dora))
   let tiers = $derived(classifyDora(dora))
+  let minutesPerWorkDay = $derived(workdayPreferencesStore.minutesPerWorkDay)
 
   const tierColors = {
     elite: 'bg-green-100 text-green-800',
@@ -96,15 +98,26 @@
     {:else}
       <p>
         VSM-derived lead time: <strong
-          >{formatDuration(reconciliation.vsmLeadTime)}</strong
+          >{formatDuration(
+            reconciliation.vsmLeadTime,
+            minutesPerWorkDay
+          )}</strong
         >
         · Actual:
-        <strong>{formatDuration(reconciliation.actualLeadTime)}</strong>
+        <strong
+          >{formatDuration(
+            reconciliation.actualLeadTime,
+            minutesPerWorkDay
+          )}</strong
+        >
       </p>
       <p class="mt-1 {reconColors[reconciliation.status]}">
         {#if reconciliation.status === 'hidden-queue'}
           Hidden queue of <strong
-            >{formatDuration(reconciliation.hiddenQueue)}</strong
+            >{formatDuration(
+              reconciliation.hiddenQueue,
+              minutesPerWorkDay
+            )}</strong
           > the map does not yet show.
         {:else if reconciliation.status === 'optimistic-map'}
           The map shows more lead time than reality — check the step estimates.

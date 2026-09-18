@@ -28,9 +28,16 @@ export const QUEUE_WARNING_THRESHOLD = 10
 // Simulation progress multiplier
 export const PROGRESS_MULTIPLIER = 10
 
+// Workday settings. Durations remain stored in minutes throughout the domain.
+export const DEFAULT_MINUTES_PER_WORK_DAY = 480
+export const WORK_ITEM_MAX_LEAD_TIME_DAYS = 2
+export const getWorkItemMaxLeadTimeMinutes = (
+	minutesPerWorkDay = DEFAULT_MINUTES_PER_WORK_DAY
+) => minutesPerWorkDay * WORK_ITEM_MAX_LEAD_TIME_DAYS
+
 // CD readiness inference thresholds
 // A work item should be completable within 2 work days (8h/day => 960 min).
-export const WORK_ITEM_MAX_LEAD_TIME_MINUTES = 960
+export const WORK_ITEM_MAX_LEAD_TIME_MINUTES = getWorkItemMaxLeadTimeMinutes()
 // A test step's suite should run in under 10 minutes.
 export const TEST_STEP_MAX_PROCESS_TIME_MINUTES = 10
 // A step whose wait time is at/above this % of lead time is a hidden queue.

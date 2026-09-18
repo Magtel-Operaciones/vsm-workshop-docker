@@ -8,7 +8,7 @@
  * Durations in minutes; throughput in items per (work) day.
  */
 
-const MINUTES_PER_WORK_DAY = 480
+const DEFAULT_MINUTES_PER_WORK_DAY = 480
 
 /**
  * Estimate work in progress from Little's Law.
@@ -17,7 +17,11 @@ const MINUTES_PER_WORK_DAY = 480
  * @param {number} [minutesPerDay]
  * @returns {number} Items in progress
  */
-export function wipFromLittlesLaw(throughputPerDay, leadTimeMinutes, minutesPerDay = MINUTES_PER_WORK_DAY) {
+export function wipFromLittlesLaw(
+  throughputPerDay,
+  leadTimeMinutes,
+  minutesPerDay = DEFAULT_MINUTES_PER_WORK_DAY
+) {
   if (!throughputPerDay || throughputPerDay <= 0) return 0
   const leadTimeDays = (leadTimeMinutes || 0) / minutesPerDay
   return Number((throughputPerDay * leadTimeDays).toFixed(2))

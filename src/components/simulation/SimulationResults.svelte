@@ -12,10 +12,12 @@
   import { simDataStore } from '../../stores/simulationDataStore.svelte.js'
   import { vsmDataStore } from '../../stores/vsmDataStore.svelte.js'
   import { formatDuration } from '../../utils/calculations/metrics.js'
+  import { workdayPreferencesStore } from '../../stores/workdayPreferencesStore.svelte.js'
 
   let results = $derived(simDataStore.results)
   let queueSizesByStepId = $derived(simDataStore.queueSizesByStepId)
   let steps = $derived(vsmDataStore.steps)
+  let minutesPerWorkDay = $derived(workdayPreferencesStore.minutesPerWorkDay)
 
   // Prepare chart data for queue sizes
   let queueChartData = $derived(
@@ -23,13 +25,16 @@
       name: step.name.length > 10 ? step.name.slice(0, 10) + '...' : step.name,
       fullName: step.name,
       peakQueue:
-        results?.bottlenecks.find((b) => b.stepId === step.id)?.peakQueueSize || 0,
+        results?.bottlenecks.find((b) => b.stepId === step.id)?.peakQueueSize ||
+        0,
       currentQueue: queueSizesByStepId[step.id] || 0,
     }))
   )
 
   // Pre-compute max to avoid O(N²) recalculation inside the {#each} loop
-  let maxPeakQueue = $derived(Math.max(...queueChartData.map((d) => d.peakQueue), 1))
+  let maxPeakQueue = $derived(
+    Math.max(...queueChartData.map((d) => d.peakQueue), 1)
+  )
 </script>
 
 {#if results}
@@ -62,7 +67,7 @@
           <span class="text-xs font-medium text-blue-800">Avg Lead Time</span>
         </div>
         <p class="text-lg font-bold text-blue-900">
-          {formatDuration(results.avgLeadTime)}
+          {formatDuration(results.avgLeadTime, minutesPerWorkDay)}
         </p>
       </div>
 
@@ -85,16 +90,22 @@
       >
         <div class="flex items-center gap-2 mb-1">
           <AlertTriangle
-            class="w-4 h-4 {results.bottlenecks.length > 0 ? 'text-red-600' : 'text-slate-600'}"
+            class="w-4 h-4 {results.bottlenecks.length > 0
+              ? 'text-red-600'
+              : 'text-slate-600'}"
           />
           <span
-            class="text-xs font-medium {results.bottlenecks.length > 0 ? 'text-red-800' : 'text-slate-800'}"
+            class="text-xs font-medium {results.bottlenecks.length > 0
+              ? 'text-red-800'
+              : 'text-slate-800'}"
           >
             Bottlenecks
           </span>
         </div>
         <p
-          class="text-lg font-bold {results.bottlenecks.length > 0 ? 'text-red-900' : 'text-slate-900'}"
+          class="text-lg font-bold {results.bottlenecks.length > 0
+            ? 'text-red-900'
+            : 'text-slate-900'}"
         >
           {results.bottlenecks.length > 0
             ? `${results.bottlenecks.length} detected`
@@ -112,7 +123,10 @@
         <div class="space-y-2">
           {#each queueChartData as item (item.fullName)}
             <div class="flex items-center gap-2">
-              <span class="w-24 text-xs text-slate-600 truncate" title={item.fullName}>
+              <span
+                class="w-24 text-xs text-slate-600 truncate"
+                title={item.fullName}
+              >
                 {item.name}
               </span>
               <div
@@ -128,7 +142,9 @@
                   style="width: {(item.peakQueue / maxPeakQueue) * 100}%"
                 ></div>
               </div>
-              <span class="w-8 text-xs text-slate-600 text-right">{item.peakQueue}</span>
+              <span class="w-8 text-xs text-slate-600 text-right"
+                >{item.peakQueue}</span
+              >
             </div>
           {/each}
         </div>

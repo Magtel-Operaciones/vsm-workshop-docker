@@ -8,10 +8,12 @@
   } from '../../data/stepTemplates.js'
   import { STEP_TYPE_CONFIG } from '../../data/stepTypeConfig.js'
   import { formatDuration } from '../../utils/calculations/metrics.js'
+  import { workdayPreferencesStore } from '../../stores/workdayPreferencesStore.svelte.js'
 
   let { onNavigate } = $props()
 
   let expandedCategory = $state(null)
+  let workdayHours = $derived(workdayPreferencesStore.workdayHours)
 
   const templatesByCategory = getTemplatesByCategory()
 
@@ -23,15 +25,17 @@
   }
 
   function handleAddFromTemplate(template) {
-    const step = withUndo(() => vsmDataStore.addStep(template.name, {
-      type: template.type,
-      description: template.description,
-      processTime: template.processTime,
-      leadTime: template.leadTime,
-      percentCompleteAccurate: template.percentCompleteAccurate,
-      queueSize: template.queueSize,
-      batchSize: template.batchSize,
-    }))
+    const step = withUndo(() =>
+      vsmDataStore.addStep(template.name, {
+        type: template.type,
+        description: template.description,
+        processTime: template.processTime,
+        leadTime: template.leadTime,
+        percentCompleteAccurate: template.percentCompleteAccurate,
+        queueSize: template.queueSize,
+        batchSize: template.batchSize,
+      })
+    )
     vsmUIStore.selectStep(step.id)
     vsmUIStore.setEditing(true)
     onNavigate?.()
@@ -44,9 +48,16 @@
   function handleShowHelp() {
     vsmUIStore.forceShowGuidance()
   }
+
+  function handleWorkdayChange(event) {
+    workdayPreferencesStore.setWorkdayHours(event.currentTarget.valueAsNumber)
+  }
 </script>
 
-<aside class="h-full w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto flex flex-col" aria-label="Step templates and instructions">
+<aside
+  class="h-full w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto flex flex-col"
+  aria-label="Step templates and instructions"
+>
   <button
     onclick={handleAddStep}
     class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -57,7 +68,9 @@
   </button>
 
   <div class="mt-6">
-    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+    <h2
+      class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3"
+    >
       Step Templates
     </h2>
     <div class="space-y-1">
@@ -75,7 +88,10 @@
             </span>
           </button>
           {#if expandedCategory === category}
-            <div id="category-{category}" class="border-t border-gray-200 bg-gray-50">
+            <div
+              id="category-{category}"
+              class="border-t border-gray-200 bg-gray-50"
+            >
               {#each templates as template (template.id)}
                 {@const config = STEP_TYPE_CONFIG[template.type]}
                 <button
@@ -90,7 +106,13 @@
                     </span>
                   </div>
                   <div class="text-xs text-gray-500 mt-0.5 ml-6">
-                    PT: {formatDuration(template.processTime)} | LT: {formatDuration(template.leadTime)}
+                    PT: {formatDuration(
+                      template.processTime,
+                      workdayPreferencesStore.minutesPerWorkDay
+                    )} | LT: {formatDuration(
+                      template.leadTime,
+                      workdayPreferencesStore.minutesPerWorkDay
+                    )}
                   </div>
                 </button>
               {/each}
@@ -101,8 +123,35 @@
     </div>
   </div>
 
+  <div class="mt-6 border-t border-gray-200 pt-4">
+    <h2
+      class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3"
+    >
+      Workday Settings
+    </h2>
+    <label class="block text-xs font-medium text-gray-700" for="workday-hours">
+      Hours per day
+      <input
+        id="workday-hours"
+        type="number"
+        min="1"
+        max="24"
+        step="0.5"
+        value={workdayHours}
+        onchange={handleWorkdayChange}
+        class="mt-1 w-full rounded-md border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        data-testid="workday-hours-input"
+      />
+    </label>
+    <p class="mt-1 text-xs text-gray-500">
+      Used for duration formatting and workday-based calculations.
+    </p>
+  </div>
+
   <div class="mt-6">
-    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+    <h2
+      class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4"
+    >
       How to Use
     </h2>
     <dl class="text-xs text-gray-600 space-y-2">
@@ -130,7 +179,9 @@
   </div>
 
   <div class="mt-8">
-    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+    <h2
+      class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4"
+    >
       Glossary
     </h2>
     <dl class="text-xs text-gray-600 space-y-2">
@@ -160,8 +211,18 @@
       aria-label="Show mapping guidance"
       data-testid="help-button"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
       <span>Help</span>
     </button>

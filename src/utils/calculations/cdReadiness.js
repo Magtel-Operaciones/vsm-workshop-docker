@@ -13,7 +13,7 @@
 
 import { MINIMUM_CD_READINESS_ITEMS } from '../../data/minimumCdPractices.js'
 import {
-  WORK_ITEM_MAX_LEAD_TIME_MINUTES,
+  getWorkItemMaxLeadTimeMinutes,
   TEST_STEP_MAX_PROCESS_TIME_MINUTES,
   FLOW_EFFICIENCY_GOOD_THRESHOLD,
   FIRST_PASS_YIELD_WARNING_THRESHOLD,
@@ -34,7 +34,7 @@ const minBy = (items, selector) =>
  * Infer the raw status for a single readiness item from VSM data.
  * @returns {{status: string, stepId: (string|null), explanation: string}}
  */
-function inferItem(itemId, steps, connections) {
+function inferItem(itemId, steps, connections, minutesPerWorkDay) {
   const hasRework = connections.some((c) => c.type === 'rework')
   const lowQualitySteps = steps.filter(
     (s) => (s.percentCompleteAccurate ?? 100) < FIRST_PASS_YIELD_WARNING_THRESHOLD
@@ -44,7 +44,8 @@ function inferItem(itemId, steps, connections) {
   switch (itemId) {
     // ---- Flow readiness signals (met | gap) ----
     case 'work-decomposition': {
-      const overLimit = steps.filter((s) => (s.leadTime || 0) > WORK_ITEM_MAX_LEAD_TIME_MINUTES)
+      const maxLeadTime = getWorkItemMaxLeadTimeMinutes(minutesPerWorkDay)
+      const overLimit = steps.filter((s) => (s.leadTime || 0) > maxLeadTime)
       if (overLimit.length === 0) return met('Work items complete within two days.')
       const worst = maxBy(overLimit, (s) => s.leadTime)
       return gap(
@@ -142,9 +143,14 @@ function applyOverride(inferred, decision) {
  * @param {Object} [overrides] - Per-item user decisions keyed by item id
  * @returns {Array} 13 readiness item results
  */
-export function calculateCdReadiness(steps = [], connections = [], overrides = {}) {
+export function calculateCdReadiness(
+  steps = [],
+  connections = [],
+  overrides = {},
+  minutesPerWorkDay = 480
+) {
   return MINIMUM_CD_READINESS_ITEMS.map((item) => {
-    const inferred = inferItem(item.id, steps, connections)
+    const inferred = inferItem(item.id, steps, connections, minutesPerWorkDay)
     // `signal` preserves the raw VSM-derived status independent of any user
     // override, so a reset can restore it and the UI can show the inferred value.
     const resolved = applyOverride(

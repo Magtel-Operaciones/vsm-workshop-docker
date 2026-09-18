@@ -2,12 +2,14 @@
   import { vsmDataStore } from '../../stores/vsmDataStore.svelte.js'
   import { runMonteCarlo } from '../../utils/simulation/monteCarlo.js'
   import { formatDuration } from '../../utils/calculations/metrics.js'
+  import { workdayPreferencesStore } from '../../stores/workdayPreferencesStore.svelte.js'
 
   let steps = $derived(vsmDataStore.steps)
 
   let variability = $state(0.25)
   let trials = $state(1000)
   let result = $state(null)
+  let minutesPerWorkDay = $derived(workdayPreferencesStore.minutesPerWorkDay)
 
   function run() {
     result = runMonteCarlo(steps, { trials, variability, seed: 1 })
@@ -26,13 +28,19 @@
   )
 </script>
 
-<details class="bg-white border-t border-gray-200 px-6 py-4" data-testid="monte-carlo-panel" open>
+<details
+  class="bg-white border-t border-gray-200 px-6 py-4"
+  data-testid="monte-carlo-panel"
+  open
+>
   <summary class="cursor-pointer text-sm font-semibold text-gray-800">
     Monte-Carlo Lead Time
   </summary>
 
   {#if steps.length === 0}
-    <p class="mt-3 text-sm text-gray-500">Add steps to simulate lead-time variability.</p>
+    <p class="mt-3 text-sm text-gray-500">
+      Add steps to simulate lead-time variability.
+    </p>
   {:else}
     <div class="mt-3 flex flex-wrap items-end gap-3">
       <label class="text-xs font-medium text-gray-700">
@@ -69,16 +77,24 @@
     </div>
 
     {#if result}
-      <div class="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4" data-testid="monte-carlo-results">
+      <div
+        class="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4"
+        data-testid="monte-carlo-results"
+      >
         {#each percentiles as p (p.label)}
           <div class="rounded-md border border-gray-200 p-2 text-center">
-            <div class="text-[10px] uppercase tracking-wide text-gray-500">{p.label}</div>
-            <div class="text-sm font-bold text-gray-800">{formatDuration(p.value)}</div>
+            <div class="text-[10px] uppercase tracking-wide text-gray-500">
+              {p.label}
+            </div>
+            <div class="text-sm font-bold text-gray-800">
+              {formatDuration(p.value, minutesPerWorkDay)}
+            </div>
           </div>
         {/each}
       </div>
       <p class="mt-2 text-[11px] text-gray-400">
-        {trials} trials. The spread between P50 and P95 is the risk variability adds to your lead time.
+        {trials} trials. The spread between P50 and P95 is the risk variability adds
+        to your lead time.
       </p>
     {/if}
   {/if}

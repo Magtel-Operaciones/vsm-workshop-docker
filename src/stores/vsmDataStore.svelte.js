@@ -14,6 +14,7 @@ import { createAnnotation } from '../utils/annotations.js'
 import { sanitizeVSMData, validateVSMData } from '../utils/validation/vsmValidator.js'
 import { autoPositionStep } from '../utils/ui/autoPositionStep.js'
 import { vsmLocalStorageRepo } from '../infrastructure/VsmLocalStorageRepository.js'
+import { workdayPreferencesStore } from './workdayPreferencesStore.svelte.js'
 
 /**
  * @typedef {import('../types/index.js').Step} Step
@@ -63,11 +64,18 @@ function createVsmDataStore(repository = vsmLocalStorageRepo) {
   let baseline = $state(persisted.baseline || null)
 
   // Cached metrics — only recomputed when steps or connections change
-  let cachedMetrics = $derived(calculateMetrics(steps, connections))
+  let cachedMetrics = $derived(
+    calculateMetrics(steps, connections, workdayPreferencesStore.minutesPerWorkDay)
+  )
 
   // CD readiness scorecard — recomputed when steps, connections, or overrides change
   let cachedCdReadiness = $derived(
-    calculateCdReadiness(steps, connections, readinessOverrides)
+    calculateCdReadiness(
+      steps,
+      connections,
+      readinessOverrides,
+      workdayPreferencesStore.minutesPerWorkDay
+    )
   )
 
   // Persist current state via repository

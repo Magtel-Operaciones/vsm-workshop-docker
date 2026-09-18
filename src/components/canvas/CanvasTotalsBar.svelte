@@ -1,8 +1,14 @@
 <script>
   import { vsmDataStore } from '../../stores/vsmDataStore.svelte.js'
   import { selectCanvasTotals } from '../../utils/ui/canvasTotals.js'
+  import { workdayPreferencesStore } from '../../stores/workdayPreferencesStore.svelte.js'
 
-  let totals = $derived(selectCanvasTotals(vsmDataStore.metrics))
+  let totals = $derived(
+    selectCanvasTotals(
+      vsmDataStore.metrics,
+      workdayPreferencesStore.minutesPerWorkDay
+    )
+  )
 
   const statusText = {
     good: 'text-green-700',
@@ -22,9 +28,19 @@
     class="pointer-events-auto flex max-w-full gap-2 overflow-x-auto rounded-full border border-gray-200 bg-white/95 px-3 py-1.5 shadow-sm backdrop-blur"
   >
     {#each totals as total (total.label)}
-      <div class="flex flex-none flex-col items-center px-2 leading-tight" data-testid="canvas-total-{total.label.toLowerCase().replace(/[^a-z]+/g, '-')}">
-        <span class="text-[10px] uppercase tracking-wide text-gray-400">{total.label}</span>
-        <span class="text-sm font-bold {statusText[total.status] || 'text-gray-800'}">{total.value}</span>
+      <div
+        class="flex flex-none flex-col items-center px-2 leading-tight"
+        data-testid="canvas-total-{total.label
+          .toLowerCase()
+          .replace(/[^a-z]+/g, '-')}"
+      >
+        <span class="text-[10px] uppercase tracking-wide text-gray-400"
+          >{total.label}</span
+        >
+        <span
+          class="text-sm font-bold {statusText[total.status] ||
+            'text-gray-800'}">{total.value}</span
+        >
       </div>
     {/each}
   </div>

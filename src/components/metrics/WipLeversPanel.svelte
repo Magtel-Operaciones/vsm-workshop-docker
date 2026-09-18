@@ -4,25 +4,43 @@
     wipFromLittlesLaw,
     projectBatchSizeChange,
   } from '../../utils/calculations/littlesLaw.js'
-  import { calculateTotalLeadTime, formatDuration } from '../../utils/calculations/metrics.js'
+  import {
+    calculateTotalLeadTime,
+    formatDuration,
+  } from '../../utils/calculations/metrics.js'
+  import { workdayPreferencesStore } from '../../stores/workdayPreferencesStore.svelte.js'
 
   let steps = $derived(vsmDataStore.steps)
   let throughputPerDay = $state(1)
 
   let totalLeadTime = $derived(calculateTotalLeadTime(steps))
-  let totalWip = $derived(wipFromLittlesLaw(throughputPerDay, totalLeadTime))
+  let minutesPerWorkDay = $derived(workdayPreferencesStore.minutesPerWorkDay)
+  let totalWip = $derived(
+    wipFromLittlesLaw(throughputPerDay, totalLeadTime, minutesPerWorkDay)
+  )
 
   // Project halving each step's batch size.
   function halved(step) {
-    return projectBatchSizeChange(step, Math.max(1, Math.ceil((step.batchSize || 1) / 2)))
+    return projectBatchSizeChange(
+      step,
+      Math.max(1, Math.ceil((step.batchSize || 1) / 2))
+    )
   }
 </script>
 
-<details class="bg-white border-t border-gray-200 px-6 py-4" data-testid="wip-levers-panel" open>
-  <summary class="cursor-pointer text-sm font-semibold text-gray-800">WIP &amp; Batch Levers</summary>
+<details
+  class="bg-white border-t border-gray-200 px-6 py-4"
+  data-testid="wip-levers-panel"
+  open
+>
+  <summary class="cursor-pointer text-sm font-semibold text-gray-800"
+    >WIP &amp; Batch Levers</summary
+  >
 
   {#if steps.length === 0}
-    <p class="mt-3 text-sm text-gray-500">Add steps to explore WIP and batch-size levers.</p>
+    <p class="mt-3 text-sm text-gray-500">
+      Add steps to explore WIP and batch-size levers.
+    </p>
   {:else}
     <div class="mt-3 flex items-center gap-3">
       <label class="text-xs font-medium text-gray-700">
@@ -53,13 +71,31 @@
       </thead>
       <tbody>
         {#each steps as step (step.id)}
-          <tr class="border-t border-gray-100" data-testid="lever-row-{step.id}">
+          <tr
+            class="border-t border-gray-100"
+            data-testid="lever-row-{step.id}"
+          >
             <td class="py-1 font-medium">{step.name}</td>
             <td class="py-1">{step.batchSize ?? 1}</td>
-            <td class="py-1">{wipFromLittlesLaw(throughputPerDay, step.leadTime)}</td>
-            <td class="py-1">{formatDuration(step.leadTime)}</td>
-            <td class="py-1 {halved(step).deltaMinutes < 0 ? 'text-green-700' : 'text-gray-600'}">
-              {formatDuration(halved(step).projectedLeadTime)}
+            <td class="py-1"
+              >{wipFromLittlesLaw(
+                throughputPerDay,
+                step.leadTime,
+                minutesPerWorkDay
+              )}</td
+            >
+            <td class="py-1"
+              >{formatDuration(step.leadTime, minutesPerWorkDay)}</td
+            >
+            <td
+              class="py-1 {halved(step).deltaMinutes < 0
+                ? 'text-green-700'
+                : 'text-gray-600'}"
+            >
+              {formatDuration(
+                halved(step).projectedLeadTime,
+                minutesPerWorkDay
+              )}
               ({halved(step).deltaPercent}%)
             </td>
           </tr>
@@ -67,7 +103,8 @@
       </tbody>
     </table>
     <p class="mt-2 text-[11px] text-gray-400">
-      WIP = throughput × lead time (Little's Law). Batch projection assumes wait time scales with batch size.
+      WIP = throughput × lead time (Little's Law). Batch projection assumes wait
+      time scales with batch size.
     </p>
   {/if}
 </details>

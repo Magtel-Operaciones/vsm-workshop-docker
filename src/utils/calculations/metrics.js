@@ -62,7 +62,7 @@ import {
 // ==============================================================================
 
 // Time constants
-const MINUTES_PER_WORK_DAY = 480
+const DEFAULT_MINUTES_PER_WORK_DAY = 480
 
 /**
  * Calculate all metrics for a value stream (Main facade function)
@@ -83,7 +83,11 @@ const MINUTES_PER_WORK_DAY = 480
  * console.log(metrics.flowEfficiency.value) // 25
  * console.log(metrics.bottleneckIds) // ['step-2', 'step-5']
  */
-export function calculateMetrics(steps = [], connections = []) {
+export function calculateMetrics(
+  steps = [],
+  connections = [],
+  minutesPerWorkDay = DEFAULT_MINUTES_PER_WORK_DAY
+) {
   return {
     totalLeadTime: calculateTotalLeadTime(steps),
     totalProcessTime: calculateTotalProcessTime(steps),
@@ -91,8 +95,8 @@ export function calculateMetrics(steps = [], connections = []) {
     firstPassYield: calculateFirstPassYield(steps),
     stepCount: steps.length,
     totalQueueSize: calculateTotalQueueSize(steps),
-    activityRatio: calculateActivityRatio(steps),
-    reworkImpact: calculateReworkImpact(steps, connections),
+    activityRatio: calculateActivityRatio(steps, minutesPerWorkDay),
+    reworkImpact: calculateReworkImpact(steps, connections, minutesPerWorkDay),
     bottleneckIds: identifyBottlenecks(steps),
   }
 }
@@ -102,16 +106,16 @@ export function calculateMetrics(steps = [], connections = []) {
  * @param {number} minutes - Duration in minutes
  * @returns {string} Formatted duration string
  */
-export function formatDuration(minutes) {
+export function formatDuration(minutes, minutesPerWorkDay = DEFAULT_MINUTES_PER_WORK_DAY) {
   if (minutes === 0) return '0m'
   if (minutes < 60) return `${minutes}m`
-  if (minutes < MINUTES_PER_WORK_DAY) {
+  if (minutes < minutesPerWorkDay) {
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
   }
-  const days = Math.floor(minutes / MINUTES_PER_WORK_DAY)
-  const remainingMinutes = minutes % MINUTES_PER_WORK_DAY
+  const days = Math.floor(minutes / minutesPerWorkDay)
+  const remainingMinutes = minutes % minutesPerWorkDay
   const hours = Math.floor(remainingMinutes / 60)
   return hours > 0 ? `${days}d ${hours}h` : `${days}d`
 }
@@ -235,7 +239,10 @@ export function calculateTotalQueueSize(steps) {
  * @param {Array} steps - Array of process steps
  * @returns {Object} Activity ratio result
  */
-export function calculateActivityRatio(steps) {
+export function calculateActivityRatio(
+  steps,
+  minutesPerWorkDay = DEFAULT_MINUTES_PER_WORK_DAY
+) {
   if (!steps || steps.length === 0) {
     return {
       value: 0,
@@ -245,7 +252,7 @@ export function calculateActivityRatio(steps) {
   const avgProcessTime = calculateTotalProcessTime(steps) / steps.length
   return {
     value: avgProcessTime,
-    displayValue: formatDuration(Math.round(avgProcessTime)),
+    displayValue: formatDuration(Math.round(avgProcessTime), minutesPerWorkDay),
   }
 }
 
@@ -256,7 +263,11 @@ export function calculateActivityRatio(steps) {
  * @param {Array} connections - Array of connections between steps
  * @returns {Object} Rework impact metrics
  */
-export function calculateReworkImpact(steps, connections) {
+export function calculateReworkImpact(
+  steps,
+  connections,
+  minutesPerWorkDay = DEFAULT_MINUTES_PER_WORK_DAY
+) {
   const baseLeadTime = calculateTotalLeadTime(steps)
 
   if (!connections || connections.length === 0) {
@@ -265,7 +276,7 @@ export function calculateReworkImpact(steps, connections) {
       reworkMultiplier: 1,
       totalReworkRate: 0,
       status: 'neutral',
-      displayValue: formatDuration(baseLeadTime),
+      displayValue: formatDuration(baseLeadTime, minutesPerWorkDay),
     }
   }
 
@@ -276,7 +287,7 @@ export function calculateReworkImpact(steps, connections) {
       reworkMultiplier: 1,
       totalReworkRate: 0,
       status: 'neutral',
-      displayValue: formatDuration(baseLeadTime),
+      displayValue: formatDuration(baseLeadTime, minutesPerWorkDay),
     }
   }
 
@@ -304,7 +315,7 @@ export function calculateReworkImpact(steps, connections) {
     reworkMultiplier: Number(reworkMultiplier.toFixed(2)),
     totalReworkRate: Number((totalReworkRate * 100).toFixed(1)),
     status,
-    displayValue: formatDuration(effectiveLeadTime),
+    displayValue: formatDuration(effectiveLeadTime, minutesPerWorkDay),
   }
 }
 

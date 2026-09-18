@@ -4,6 +4,7 @@
   import { formatDuration } from '../../../utils/calculations/metrics.js'
   import { BOTTLENECK_QUEUE_THRESHOLD } from '../../../data/thresholds.js'
   import { vsmUIStore } from '../../../stores/vsmUIStore.svelte.js'
+  import { workdayPreferencesStore } from '../../../stores/workdayPreferencesStore.svelte.js'
 
   let { data, selected = false } = $props()
 
@@ -23,6 +24,7 @@
   let isHighQueue = $derived(data.queueSize >= BOTTLENECK_QUEUE_THRESHOLD)
   let hasBatch = $derived(data.batchSize > 1)
   let isBottleneck = $derived(isHighQueue || data.isSimulationBottleneck)
+  let minutesPerWorkDay = $derived(workdayPreferencesStore.minutesPerWorkDay)
 
   let nodeClasses = $derived(
     (() => {
@@ -50,7 +52,9 @@
 
   {#if hasQueue}
     <div
-      class="vsm-node__queue-badge {isHighQueue ? 'vsm-node__queue-badge--high' : ''}"
+      class="vsm-node__queue-badge {isHighQueue
+        ? 'vsm-node__queue-badge--high'
+        : ''}"
       title="{data.queueSize} items waiting"
       aria-label="Queue: {data.queueSize} items waiting"
     >
@@ -76,14 +80,20 @@
   <div class="vsm-node__metrics">
     <div>
       <span class="text-gray-500" aria-label="Process Time">PT:</span>
-      <span class="font-medium">{formatDuration(data.processTime)}</span>
+      <span class="font-medium"
+        >{formatDuration(data.processTime, minutesPerWorkDay)}</span
+      >
     </div>
     <div>
       <span class="text-gray-500" aria-label="Lead Time">LT:</span>
-      <span class="font-medium">{formatDuration(data.leadTime)}</span>
+      <span class="font-medium"
+        >{formatDuration(data.leadTime, minutesPerWorkDay)}</span
+      >
     </div>
     <div>
-      <span class="text-gray-500" aria-label="Percent Complete and Accurate">%C&A:</span>
+      <span class="text-gray-500" aria-label="Percent Complete and Accurate"
+        >%C&A:</span
+      >
       <span class="font-medium">{data.percentCompleteAccurate}%</span>
     </div>
   </div>
