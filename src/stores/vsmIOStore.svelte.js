@@ -96,10 +96,8 @@ function createVsmIOStore() {
     loadTemplate(template) {
       const now = new Date().toISOString()
       const newSteps = template.steps.map((step) => {
-        // eslint-disable-next-line no-unused-vars
-        const { position, ...domainData } = step
         return {
-          ...domainData,
+          ...step,
           id: crypto.randomUUID(),
         }
       })
