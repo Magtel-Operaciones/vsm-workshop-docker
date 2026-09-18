@@ -14,10 +14,12 @@
 
 {#if visible}
   <div
-    class="absolute top-4 left-1/2 -translate-x-1/2 z-10 max-w-lg w-full"
+    class="absolute left-4 right-4 top-4 z-10 mx-auto max-w-lg"
     data-testid="guidance-banner"
   >
-    <div class="bg-blue-50 border border-blue-200 rounded-lg shadow-md p-4 flex items-start gap-3">
+    <div
+      class="bg-blue-50 border border-blue-200 rounded-lg shadow-md p-4 flex items-start gap-3"
+    >
       <div class="text-blue-600 text-xl flex-shrink-0" aria-hidden="true">
         &#x2190;
       </div>
@@ -26,9 +28,9 @@
           Start from the end: map backwards
         </p>
         <p class="text-sm text-blue-600 mt-1">
-          Add your final delivery step first (e.g., "Deploy to Production"), then
-          work backwards. Each new step will be placed to the left, tracing your
-          value stream from customer back to source.
+          Add your final delivery step first (e.g., "Deploy to Production"),
+          then work backwards. Each new step will be placed to the left, tracing
+          your value stream from customer back to source.
         </p>
       </div>
       <button
@@ -37,8 +39,18 @@
         aria-label="Dismiss guidance"
         data-testid="dismiss-guidance-button"
       >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </div>

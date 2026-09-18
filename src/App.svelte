@@ -43,7 +43,9 @@
       e.stopPropagation()
       performUndo()
     } else if (
-      (e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'z' || e.key === 'Z')
+      (e.ctrlKey || e.metaKey) &&
+      e.shiftKey &&
+      (e.key === 'z' || e.key === 'Z')
     ) {
       e.preventDefault()
       e.stopPropagation()
@@ -65,7 +67,8 @@
   let selectedConnectionId = $derived(vsmUIStore.selectedConnectionId)
   let isEditingConnection = $derived(vsmUIStore.isEditingConnection)
   let editorOpen = $derived(
-    (selectedStepId && isEditing) || (selectedConnectionId && isEditingConnection)
+    (selectedStepId && isEditing) ||
+      (selectedConnectionId && isEditingConnection)
   )
 
   function handleCanvasClick() {
@@ -93,7 +96,13 @@
 <Toast />
 <svelte:window onkeydown={handleGlobalKeyDown} />
 
-<KeyboardShortcutsOverlay visible={showShortcuts} triggerRef={shortcutsTriggerRef} onclose={() => { showShortcuts = false }} />
+<KeyboardShortcutsOverlay
+  visible={showShortcuts}
+  triggerRef={shortcutsTriggerRef}
+  onclose={() => {
+    showShortcuts = false
+  }}
+/>
 {#if !hasVsm}
   <WelcomeScreen />
 {:else}
@@ -148,7 +157,7 @@
         <!-- Editor: side panel on desktop, bottom sheet on phone/tablet -->
         {#if editorOpen}
           <div
-            class="fixed inset-x-0 bottom-0 z-40 max-h-[85vh] overflow-y-auto bg-white shadow-2xl lg:static lg:inset-auto lg:max-h-none lg:overflow-visible lg:shadow-none"
+            class="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto bg-white shadow-2xl lg:static lg:inset-auto lg:z-auto lg:max-h-none lg:overflow-visible lg:shadow-none"
           >
             <EditorPanel
               {selectedStepId}

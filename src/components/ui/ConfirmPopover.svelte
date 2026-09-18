@@ -49,7 +49,7 @@
 </script>
 
 <div
-  class={`absolute left-0 z-[60] w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-3 ${placement === 'below' ? 'top-full mt-2' : 'bottom-full mb-2'}`}
+  class={`absolute left-1/2 z-[60] max-h-[calc(100vh-1rem)] w-56 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-y-auto rounded-lg border border-gray-200 bg-white p-3 shadow-lg ${placement === 'below' ? 'top-full mt-2' : 'bottom-full mb-2'}`}
   data-testid="confirm-popover"
   role="alertdialog"
   aria-labelledby="confirm-popover-message"

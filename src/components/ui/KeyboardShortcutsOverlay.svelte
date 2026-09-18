@@ -62,7 +62,9 @@
     onclick={handleBackdropClick}
     data-testid="keyboard-shortcuts-overlay"
   >
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+    <div
+      class="mx-4 max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl bg-white p-6 shadow-xl"
+    >
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold text-slate-900">Keyboard Shortcuts</h2>
         <button
@@ -72,8 +74,19 @@
           aria-label="Close keyboard shortcuts"
           data-testid="close-shortcuts-button"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -89,7 +102,9 @@
           {#each shortcuts as shortcut (shortcut.keys)}
             <tr class="border-t border-slate-100">
               <td class="py-2 pr-4">
-                <kbd class="px-2 py-1 text-xs font-mono bg-slate-100 border border-slate-200 rounded text-slate-700">
+                <kbd
+                  class="px-2 py-1 text-xs font-mono bg-slate-100 border border-slate-200 rounded text-slate-700"
+                >
                   {shortcut.keys}
                 </kbd>
               </td>

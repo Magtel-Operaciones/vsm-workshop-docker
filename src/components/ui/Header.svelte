@@ -321,7 +321,7 @@
           bind:this={exportMenuRef}
           role="menu"
           onkeydown={handleMenuContainerKeyDown}
-          class="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-50"
+          class="absolute right-0 z-50 mt-1 max-h-[calc(100vh-1rem)] w-40 max-w-[calc(100vw-1rem)] overflow-y-auto rounded border border-gray-200 bg-white shadow-lg"
         >
           <button
             onclick={() => {

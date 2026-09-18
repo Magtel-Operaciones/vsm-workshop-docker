@@ -18,12 +18,14 @@
 
 {#if toastStore.messages.length > 0}
   <div
-    class="fixed bottom-4 right-4 z-[70] flex flex-col gap-2 max-w-sm"
+    class="fixed bottom-4 left-4 right-4 z-[70] flex max-w-sm flex-col gap-2 sm:left-auto"
     data-testid="toast-container"
   >
     {#each toastStore.messages as toast (toast.id)}
       <div
-        class="flex items-start gap-2 p-3 border rounded-lg shadow-md {typeStyles[toast.type] || typeStyles.info}"
+        class="flex items-start gap-2 p-3 border rounded-lg shadow-md {typeStyles[
+          toast.type
+        ] || typeStyles.info}"
         data-testid="toast-message"
         role={toast.type === 'error' ? 'alert' : 'status'}
         aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
@@ -39,8 +41,19 @@
           aria-label="Dismiss notification"
           data-testid="toast-dismiss-button"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
