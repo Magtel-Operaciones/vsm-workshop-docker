@@ -9,7 +9,11 @@
   let comparisonResults = $derived(scenarioStore.comparisonResults)
 </script>
 
-<div class="max-h-[40vh] overflow-y-auto" data-testid="simulation-panel">
+<div
+  id="simulation-panel"
+  class="shrink-0 max-h-[40vh] overflow-y-auto"
+  data-testid="simulation-panel"
+>
   {#if simulationResults}
     <SimulationResults />
   {/if}
