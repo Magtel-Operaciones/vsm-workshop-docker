@@ -123,8 +123,12 @@
           strokeWidth: isSelected ? 3 : 2,
           strokeDasharray: conn.type === 'rework' ? '5,5' : 'none',
         },
-        label: conn.type === 'rework' ? `${conn.reworkRate}% rework` : undefined,
-        labelStyle: { fill: conn.type === 'rework' ? '#ef4444' : '#6b7280', fontSize: 10 },
+        label:
+          conn.type === 'rework' ? `${conn.reworkRate}% rework` : undefined,
+        labelStyle: {
+          fill: conn.type === 'rework' ? '#ef4444' : '#6b7280',
+          fontSize: 10,
+        },
       }
     })
   )
@@ -185,7 +189,7 @@
 </script>
 
 <div
-  class="w-full h-full relative"
+  class="relative w-full h-full"
   onkeydown={handleKeyDown}
   tabindex="0"
   role="application"
@@ -202,6 +206,7 @@
       <div class="relative">
         <ConfirmPopover
           message="Delete this step?"
+          placement="below"
           onconfirm={handleConfirmKeyboardDelete}
           oncancel={handleCancelKeyboardDelete}
         />
