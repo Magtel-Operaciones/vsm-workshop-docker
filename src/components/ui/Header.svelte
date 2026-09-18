@@ -4,7 +4,11 @@
   import { toastStore } from '../../stores/toastStore.svelte.js'
   import { undoStore } from '../../stores/undoStore.svelte.js'
   import { performUndo, performRedo } from '../../utils/undoHelper.js'
-  import { exportAsJson, exportAsPng, exportAsPdf } from '../../utils/export/index.js'
+  import {
+    exportAsJson,
+    exportAsPng,
+    exportAsPdf,
+  } from '../../utils/export/index.js'
   import ConfirmPopover from './ConfirmPopover.svelte'
 
   let { onMenuClick } = $props()
@@ -80,13 +84,17 @@
     if (!file) return
 
     if (file.size > 10000000) {
-      toastStore.add('File is too large. Please select a file under 10 MB.', 'error')
+      toastStore.add(
+        'File is too large. Please select a file under 10 MB.',
+        'error'
+      )
       e.target.value = ''
       return
     }
 
     const isJson =
-      file.type === 'application/json' || file.name.toLowerCase().endsWith('.json')
+      file.type === 'application/json' ||
+      file.name.toLowerCase().endsWith('.json')
     if (!isJson) {
       toastStore.add('Invalid file type. Please select a JSON file.', 'error')
       e.target.value = ''
@@ -97,7 +105,10 @@
     reader.onload = (event) => {
       const result = vsmIOStore.importFromJson(event.target.result)
       if (!result) {
-        toastStore.add('Failed to import file. Please check the format.', 'error')
+        toastStore.add(
+          'Failed to import file. Please check the format.',
+          'error'
+        )
       }
     }
     reader.onerror = () => {
@@ -158,7 +169,9 @@
   }
 </script>
 
-<header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+<header
+  class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between"
+>
   <div class="flex items-center gap-3 min-w-0">
     {#if onMenuClick}
       <button
@@ -167,7 +180,14 @@
         aria-label="Open menu"
         data-testid="sidebar-toggle"
       >
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
           <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
@@ -208,8 +228,19 @@
       title="Undo (Ctrl+Z)"
       data-testid="undo-button"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2M3 10l4-4M3 10l4 4" />
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 10h10a5 5 0 015 5v2M3 10l4-4M3 10l4 4"
+        />
       </svg>
     </button>
     <button
@@ -220,8 +251,19 @@
       title="Redo (Ctrl+Shift+Z)"
       data-testid="redo-button"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a5 5 0 00-5 5v2M21 10l-4-4M21 10l-4 4" />
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 10H11a5 5 0 00-5 5v2M21 10l-4-4M21 10l-4 4"
+        />
       </svg>
     </button>
     <div class="h-6 w-px bg-gray-300"></div>
@@ -237,6 +279,7 @@
         <ConfirmPopover
           message="Create a new map? This will clear the current map."
           confirmLabel="Create"
+          placement="below"
           onconfirm={handleConfirmNewMap}
           oncancel={handleCancelNewMap}
         />
@@ -260,8 +303,17 @@
         data-testid="export-button"
       >
         Export
-        <svg class="inline-block w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        <svg
+          class="inline-block w-3 h-3 ml-1"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
         </svg>
       </button>
       {#if isExportOpen}
@@ -272,7 +324,10 @@
           class="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-50"
         >
           <button
-            onclick={() => { handleExportJson(); closeExportMenu() }}
+            onclick={() => {
+              handleExportJson()
+              closeExportMenu()
+            }}
             role="menuitem"
             class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus:bg-gray-100"
             data-testid="export-json"
@@ -280,7 +335,10 @@
             Export as JSON
           </button>
           <button
-            onclick={() => { handleExportPng(); closeExportMenu() }}
+            onclick={() => {
+              handleExportPng()
+              closeExportMenu()
+            }}
             role="menuitem"
             class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus:bg-gray-100"
             data-testid="export-png"
@@ -288,7 +346,10 @@
             Export as PNG
           </button>
           <button
-            onclick={() => { handleExportPdf(); closeExportMenu() }}
+            onclick={() => {
+              handleExportPdf()
+              closeExportMenu()
+            }}
             role="menuitem"
             class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus:bg-gray-100"
             data-testid="export-pdf"
